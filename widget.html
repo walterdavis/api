@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Language" content="en">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" type="text/css" media="screen">
+<title>{{name}} | API Test</title>
+</head>
+<body>
+  <main class="container">
+    <div class="row">
+      <div class="md-col-12" id="widget">
+        <h1>{{name}}</h1>
+        <p>Color: {{color}}</p>
+        <p>{{description}}</p>
+        <p><a href="/api">Back</a></p>
+      </div>
+    </div>
+  </main>
+  <script type="text/javascript">
+  var id = window.location.search.split('?id=')[1] || 1;
+  var template = document.querySelector('#widget');
+  template.parentNode.removeChild(template);
+  function mustache(template,data){
+    var source = template.innerHTML || template;
+    return source.replace(/\{\{(\w*)\}\}/g,
+    function(m, key){
+      return data.hasOwnProperty(key) ? data[key] : "";
+    });
+  }
+  function widget(data){
+    template.innerHTML = mustache(template, data);
+    document.title = mustache(document.title, data);
+    document.querySelector('.row').appendChild(template);
+  }
+  var script = document.createElement('script');
+  script.src = 'http://localhost:3000/widgets/' + id + '.json?callback=widget';
+  document.body.appendChild(script);
+  </script>
+</body>
+</html>

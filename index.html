@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Language" content="en">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" type="text/css" media="screen">
+<title>API Test</title>
+</head>
+<body>
+  <main class="container">
+    <div class="row">
+      <div class="md-col-12">
+        <h1>Widgets</h1>
+        <form id="new_widget" method="post" action="http://localhost:3000/widgets">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>
+                Name
+              </th>
+              <th>
+                Color
+              </th>
+              <th>
+                Description
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="widgets">
+            <tr id="widget">
+              <td>
+                <a href="widget.html?id={{id}}">{{name}}</a>
+              </td>
+              <td>
+                {{color}}
+              </td>
+              <td>
+                {{description}}
+              </td>
+              <td><button type="button" class="delete close" data-target="tr" aria-label="Close"><span aria-hidden="true">&times;</span></button></td>
+            </tr>
+          </tbody>
+        </table>
+        </form>
+        <p><a id="add_new" class="btn btn-success pull-right">Add a Widget</a></p>
+      </div>
+    </div>
+  </main>
+  <script src="form.js" type="text/javascript" charset="utf-8"></script>
+  <script src="closest.js" type="text/javascript" charset="utf-8"></script>
+  <script src="ajax.js" type="text/javascript" charset="utf-8"></script>
+  <script src="mustache.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript">
+  var template = document.querySelector('#widget');
+  template.parentNode.removeChild(template);
+  var new_widget = function(evt){
+    this.style.display = 'none';
+    var tbody = document.querySelector('#widgets');
+    var form = document.createElement('tr');
+    form.id = 'new_fields';
+    var fields = ['name', 'color', 'description'];
+    for (var i = 0; i < fields.length; i++) {
+      var field = fields[i];
+      form.innerHTML += '<td><input name="widget[' + field + ']" class="form-control" placeholder="' + field + '"></td>'; 
+    }
+    form.innerHTML += '<td><input type="submit" name="commit" value="Create" class="btn btn-primary">\
+    <button type="button" class="btn btn-default cancel" data-target="tr" aria-label="Cancel">Cancel</button></td>';
+    form.querySelector('td:first-of-type input').autofocus = 'autofocus';
+    tbody.appendChild(form);
+  };
+
+  var add_new = document.querySelector('#add_new')
+  add_new.addEventListener('click', new_widget);
+  
+  document.addEventListener('click', function(evt){
+    var elm;
+    if(elm = evt.target.closest('.delete')){
+      evt.preventDefault();
+      if(confirm('Are you sure?')){
+        var remove = elm.closest(elm.getAttribute('data-target'));
+        var id = remove.id.split('_')[1];
+        attrs = {id: id, method: '_delete'};
+        ajaxRequest(elm.closest('form').action + '/' + id + '.json', attrs, '_delete', function(){
+          remove.parentNode.removeChild(remove);
+          add_new.style.display = 'inline-block';
+        });
+      }
+    }else if(elm = evt.target.closest('.close, .cancel')){
+      evt.preventDefault();
+      var remove = elm.closest(elm.getAttribute('data-target'));
+      remove.parentNode.removeChild(remove);
+      add_new.style.display = 'inline-block';
+    }
+  });
+  
+  document.querySelector('#new_widget').addEventListener('submit', function(evt){
+    evt.preventDefault();
+    var elm = this;
+    var attrs = serialize(elm);
+    ajaxRequest(elm.action, attrs, '_post', function(data){
+      var t = template.cloneNode(true);
+      var data = JSON.parse(data);
+      t.innerHTML = mustache(t, data);
+      t.id += ('_' + data.id);
+      var tbody = document.querySelector('#widgets');
+      tbody.appendChild(t);
+      add_new.style.display = 'inline-block';
+      var remove = document.querySelector('#new_fields');
+      remove.parentNode.removeChild(remove);
+    });
+  });
+  
+  function widgets(data){
+    var tbody = document.querySelector('#widgets');
+    for (var i = 0; i < data.length; i++) {
+      var d = data[i];
+      var t = template.cloneNode(true);
+      t.innerHTML = mustache(t, d);
+      t.id += ('_' + d.id);
+      tbody.appendChild(t);
+    }
+  }
+
+  var script = document.createElement('script');
+  script.src = 'http://localhost:3000/widgets.json?callback=widgets';
+  document.body.appendChild(script);
+  </script>
+</body>
+</html>
