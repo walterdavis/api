@@ -48,13 +48,15 @@
       </div>
     </div>
   </main>
-  <script src="form.js" type="text/javascript" charset="utf-8"></script>
-  <script src="closest.js" type="text/javascript" charset="utf-8"></script>
-  <script src="ajax.js" type="text/javascript" charset="utf-8"></script>
-  <script src="mustache.js" type="text/javascript" charset="utf-8"></script>
+  <script src="lib/form.js" type="text/javascript" charset="utf-8"></script>
+  <script src="lib/closest.js" type="text/javascript" charset="utf-8"></script>
+  <script src="lib/ajax.js" type="text/javascript" charset="utf-8"></script>
+  <script src="lib/mustache.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript">
+  // extract row template from the page
   var template = document.querySelector('#widget');
   template.parentNode.removeChild(template);
+  
   var new_widget = function(evt){
     this.style.display = 'none';
     var tbody = document.querySelector('#widgets');

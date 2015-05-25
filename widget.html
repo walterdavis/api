@@ -18,17 +18,11 @@
       </div>
     </div>
   </main>
+  <script src="lib/mustache.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript">
   var id = window.location.search.split('?id=')[1] || 1;
   var template = document.querySelector('#widget');
   template.parentNode.removeChild(template);
-  function mustache(template,data){
-    var source = template.innerHTML || template;
-    return source.replace(/\{\{(\w*)\}\}/g,
-    function(m, key){
-      return data.hasOwnProperty(key) ? data[key] : "";
-    });
-  }
   function widget(data){
     template.innerHTML = mustache(template, data);
     document.title = mustache(document.title, data);
