@@ -103,7 +103,6 @@
     var attrs = serialize(elm);
     ajaxRequest(elm.action, attrs, '_post', function(data){
       var t = template.cloneNode(true);
-      var data = JSON.parse(data);
       t.innerHTML = mustache(t, data);
       t.id += ('_' + data.id);
       var tbody = document.querySelector('#widgets');
