@@ -57,6 +57,7 @@
   var template = document.querySelector('#widget');
   template.parentNode.removeChild(template);
   
+  // callback to add an empty form for a widget
   var new_widget = function(evt){
     this.style.display = 'none';
     var tbody = document.querySelector('#widgets');
